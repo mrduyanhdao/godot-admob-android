@@ -87,48 +87,48 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
 
     override fun getPluginSignals(): Set<SignalInfo> = setOf(
         // Init
-        SignalInfo("on_initialization_complete", java.util.Dictionary::class.java),
+        SignalInfo("on_initialization_complete", java.util.Hashtable::class.java),
 
         // Banner
         SignalInfo("on_ad_clicked", Int::class.javaObjectType),
         SignalInfo("on_ad_closed", Int::class.javaObjectType),
-        SignalInfo("on_ad_failed_to_load", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_ad_failed_to_load", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_ad_impression", Int::class.javaObjectType),
         SignalInfo("on_ad_loaded", Int::class.javaObjectType),
         SignalInfo("on_ad_opened", Int::class.javaObjectType),
 
         // Rewarded
         SignalInfo("on_rewarded_ad_loaded", Int::class.javaObjectType),
-        SignalInfo("on_rewarded_ad_failed_to_load", Int::class.javaObjectType, java.util.Dictionary::class.java),
-        SignalInfo("on_rewarded_ad_user_earned_reward", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_rewarded_ad_failed_to_load", Int::class.javaObjectType, java.util.Hashtable::class.java),
+        SignalInfo("on_rewarded_ad_user_earned_reward", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_rewarded_ad_clicked", Int::class.javaObjectType),
         SignalInfo("on_rewarded_ad_dismissed_full_screen_content", Int::class.javaObjectType),
-        SignalInfo("on_rewarded_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_rewarded_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_rewarded_ad_impression", Int::class.javaObjectType),
         SignalInfo("on_rewarded_ad_showed_full_screen_content", Int::class.javaObjectType),
 
         // Interstitial
         SignalInfo("on_interstitial_ad_loaded", Int::class.javaObjectType),
-        SignalInfo("on_interstitial_ad_failed_to_load", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_interstitial_ad_failed_to_load", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_interstitial_ad_clicked", Int::class.javaObjectType),
         SignalInfo("on_interstitial_ad_dismissed_full_screen_content", Int::class.javaObjectType),
-        SignalInfo("on_interstitial_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_interstitial_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_interstitial_ad_impression", Int::class.javaObjectType),
         SignalInfo("on_interstitial_ad_showed_full_screen_content", Int::class.javaObjectType),
 
         // Rewarded Interstitial
         SignalInfo("on_rewarded_interstitial_ad_loaded", Int::class.javaObjectType),
-        SignalInfo("on_rewarded_interstitial_ad_failed_to_load", Int::class.javaObjectType, java.util.Dictionary::class.java),
-        SignalInfo("on_rewarded_interstitial_ad_user_earned_reward", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_rewarded_interstitial_ad_failed_to_load", Int::class.javaObjectType, java.util.Hashtable::class.java),
+        SignalInfo("on_rewarded_interstitial_ad_user_earned_reward", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_rewarded_interstitial_ad_clicked", Int::class.javaObjectType),
         SignalInfo("on_rewarded_interstitial_ad_dismissed_full_screen_content", Int::class.javaObjectType),
-        SignalInfo("on_rewarded_interstitial_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_rewarded_interstitial_ad_failed_to_show_full_screen_content", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_rewarded_interstitial_ad_impression", Int::class.javaObjectType),
         SignalInfo("on_rewarded_interstitial_ad_showed_full_screen_content", Int::class.javaObjectType),
 
         // Native
         SignalInfo("on_native_ad_loaded", Int::class.javaObjectType),
-        SignalInfo("on_native_ad_failed_to_load", Int::class.javaObjectType, java.util.Dictionary::class.java),
+        SignalInfo("on_native_ad_failed_to_load", Int::class.javaObjectType, java.util.Hashtable::class.java),
         SignalInfo("on_native_ad_clicked", Int::class.javaObjectType),
         SignalInfo("on_native_ad_impression", Int::class.javaObjectType),
 
@@ -182,7 +182,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun set_request_configuration(configDict: java.util.Dictionary<Any, Any>, testDeviceIds: Array<String>) {
+    fun set_request_configuration(configDict: java.util.Hashtable<Any, Any>, testDeviceIds: Array<String>) {
         val builder = RequestConfiguration.Builder()
         val maxRating = configDict["max_ad_content_rating"] as? String
         if (maxRating != null) builder.setMaxAdContentRating(maxRating)
@@ -196,7 +196,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun get_initialization_status(): java.util.Dictionary<Any, Any> = getInitializationStatusDict()
+    fun get_initialization_status(): java.util.Hashtable<Any, Any> = getInitializationStatusDict()
 
     @UsedByGodot
     fun set_app_volume(volume: Float) {
@@ -213,7 +213,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     // =========================================================================
 
     @UsedByGodot
-    fun banner_create(adViewDict: java.util.Dictionary<Any, Any>): Int {
+    fun banner_create(adViewDict: java.util.Hashtable<Any, Any>): Int {
         val act = activity ?: run {
             Log.e(TAG, "Cannot create banner — activity is null")
             return -1
@@ -221,7 +221,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
         val uid = bannerNextUid++
         val adUnitId = adViewDict["ad_unit_id"] as? String ?: ""
         val adPosition = adViewDict["ad_position"] as? Int ?: 0
-        val adSizeDict = adViewDict["ad_size"] as? java.util.Dictionary<Any, Any>
+        val adSizeDict = adViewDict["ad_size"] as? java.util.Hashtable<Any, Any>
         val width = adSizeDict?.get("width") as? Int ?: AdSize.FULL_WIDTH
         val height = adSizeDict?.get("height") as? Int ?: 50
 
@@ -264,7 +264,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun banner_load_ad(uid: Int, requestDict: java.util.Dictionary<Any, Any>, keywords: Array<String>) {
+    fun banner_load_ad(uid: Int, requestDict: java.util.Hashtable<Any, Any>, keywords: Array<String>) {
         val adView = adViews[uid] ?: run { Log.w(TAG, "banner_load_ad: unknown uid=$uid"); return }
         adView.loadAd(buildAdRequest(requestDict, keywords))
     }
@@ -321,7 +321,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun rewarded_load(adUnitId: String, requestDict: java.util.Dictionary<Any, Any>, keywords: Array<String>, uid: Int) {
+    fun rewarded_load(adUnitId: String, requestDict: java.util.Hashtable<Any, Any>, keywords: Array<String>, uid: Int) {
         val act = activity ?: run {
             Log.e(TAG, "Cannot load rewarded ad — activity is null")
             emitSignal("on_rewarded_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
@@ -380,7 +380,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun rewarded_set_server_side_verification_options(uid: Int, optionsDict: java.util.Dictionary<Any, Any>) {
+    fun rewarded_set_server_side_verification_options(uid: Int, optionsDict: java.util.Hashtable<Any, Any>) {
         val ad = rewardedAds[uid] ?: return
         val builder = ServerSideVerificationOptions.Builder()
         (optionsDict["custom_data"] as? String)?.let { builder.setCustomData(it) }
@@ -400,7 +400,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun interstitial_load(adUnitId: String, requestDict: java.util.Dictionary<Any, Any>, keywords: Array<String>, uid: Int) {
+    fun interstitial_load(adUnitId: String, requestDict: java.util.Hashtable<Any, Any>, keywords: Array<String>, uid: Int) {
         val act = activity ?: run {
             Log.e(TAG, "Cannot load interstitial ad — activity is null")
             emitSignal("on_interstitial_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
@@ -462,7 +462,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun rewarded_interstitial_load(adUnitId: String, requestDict: java.util.Dictionary<Any, Any>, keywords: Array<String>, uid: Int) {
+    fun rewarded_interstitial_load(adUnitId: String, requestDict: java.util.Hashtable<Any, Any>, keywords: Array<String>, uid: Int) {
         val act = activity ?: run {
             Log.e(TAG, "Cannot load rewarded interstitial ad — activity is null")
             emitSignal("on_rewarded_interstitial_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
@@ -521,7 +521,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun rewarded_interstitial_set_server_side_verification_options(uid: Int, optionsDict: java.util.Dictionary<Any, Any>) {
+    fun rewarded_interstitial_set_server_side_verification_options(uid: Int, optionsDict: java.util.Hashtable<Any, Any>) {
         val ad = rewardedInterstitialAds[uid] ?: return
         val builder = ServerSideVerificationOptions.Builder()
         (optionsDict["custom_data"] as? String)?.let { builder.setCustomData(it) }
@@ -541,7 +541,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun native_load(adUnitId: String, requestDict: java.util.Dictionary<Any, Any>, keywords: Array<String>, uid: Int) {
+    fun native_load(adUnitId: String, requestDict: java.util.Hashtable<Any, Any>, keywords: Array<String>, uid: Int) {
         val act = activity ?: run {
             Log.e(TAG, "Cannot load native ad — activity is null")
             emitSignal("on_native_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
@@ -568,7 +568,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     }
 
     @UsedByGodot
-    fun native_get_ad_data(uid: Int): java.util.Dictionary<Any, Any> {
+    fun native_get_ad_data(uid: Int): java.util.Hashtable<Any, Any> {
         val nativeAd = nativeAds[uid] ?: run {
             Log.w(TAG, "native_get_ad_data: no native ad for uid=$uid")
             return java.util.Hashtable()
@@ -613,7 +613,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     // SHARED HELPERS
     // =========================================================================
 
-    private fun getInitializationStatusDict(): java.util.Dictionary<Any, Any> {
+    private fun getInitializationStatusDict(): java.util.Hashtable<Any, Any> {
         val result = java.util.Hashtable<Any, Any>()
         val status = MobileAds.getInitializationStatus() ?: return result
         for (entry in status.adapterStatusMap.entries) {
@@ -626,7 +626,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
         return result
     }
 
-    private fun buildAdRequest(dict: java.util.Dictionary<Any, Any>, keywords: Array<String>): AdRequest {
+    private fun buildAdRequest(dict: java.util.Hashtable<Any, Any>, keywords: Array<String>): AdRequest {
         val builder = AdRequest.Builder()
         if (keywords.isNotEmpty()) {
             for (kw in keywords) builder.addKeyword(kw)
@@ -634,7 +634,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
         return builder.build()
     }
 
-    private fun createLoadAdErrorDict(error: LoadAdError): java.util.Dictionary<Any, Any> {
+    private fun createLoadAdErrorDict(error: LoadAdError): java.util.Hashtable<Any, Any> {
         val dict = java.util.Hashtable<Any, Any>()
         dict["code"] = error.code
         dict["message"] = error.message
@@ -642,7 +642,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
         return dict
     }
 
-    private fun createAdErrorDict(error: AdError): java.util.Dictionary<Any, Any> {
+    private fun createAdErrorDict(error: AdError): java.util.Hashtable<Any, Any> {
         val dict = java.util.Hashtable<Any, Any>()
         dict["code"] = error.code
         dict["message"] = error.message
@@ -650,7 +650,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
         return dict
     }
 
-    private fun createErrorDict(code: Int, message: String, domain: String): java.util.Dictionary<Any, Any> {
+    private fun createErrorDict(code: Int, message: String, domain: String): java.util.Hashtable<Any, Any> {
         val dict = java.util.Hashtable<Any, Any>()
         dict["code"] = code
         dict["message"] = message
