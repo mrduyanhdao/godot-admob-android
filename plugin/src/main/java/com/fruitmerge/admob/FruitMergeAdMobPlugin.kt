@@ -235,7 +235,12 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
     @UsedByGodot
     fun banner_load_ad(uid: Int, keywords: Array<String>) {
         val adView = adViews[uid] ?: run { Log.w(TAG, "banner_load_ad: unknown uid=$uid"); return }
-        adView.loadAd(buildAdRequest(keywords))
+        // Must run on UI thread to ensure the AdView is already attached to the window
+        // (banner_create queues addView on UI thread; this ensures loadAd runs after it)
+        activity?.runOnUiThread {
+            adView.loadAd(buildAdRequest(keywords))
+            Log.d(TAG, "banner_load_ad: requested load for uid=$uid")
+        }
     }
 
     @UsedByGodot
