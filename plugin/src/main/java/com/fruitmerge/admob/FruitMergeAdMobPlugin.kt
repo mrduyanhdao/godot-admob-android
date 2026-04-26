@@ -309,34 +309,39 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
             emitSignal("on_rewarded_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
             return
         }
-        RewardedAd.load(act, adUnitId, buildAdRequest(keywords), object : RewardedAdLoadCallback() {
-            override fun onAdFailedToLoad(error: LoadAdError) {
-                Log.w(TAG, "Rewarded ad failed to load uid=$uid: ${error.message}")
-                emitSignal("on_rewarded_ad_failed_to_load", uid, createLoadAdErrorDict(error))
-            }
-            override fun onAdLoaded(ad: RewardedAd) {
-                Log.d(TAG, "Rewarded ad loaded uid=$uid")
-                ad.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
-                    AdRevenueHelper.logPaidEvent("rewarded", uid, adValue)
-                    emitSignal("on_paid_event", "rewarded", uid, adValue.valueMicros, adValue.currencyCode, adValue.precisionType)
+        // Must run on UI thread — Google SDK v25 silently drops callbacks when
+        // load() is called from a non-UI thread (same bug as banner).
+        act.runOnUiThread {
+            Log.d(TAG, "rewarded_load: requesting load for uid=$uid")
+            RewardedAd.load(act, adUnitId, buildAdRequest(keywords), object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.w(TAG, "Rewarded ad failed to load uid=$uid: ${error.message}")
+                    emitSignal("on_rewarded_ad_failed_to_load", uid, createLoadAdErrorDict(error))
                 }
-                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdClicked() { emitSignal("on_rewarded_ad_clicked", uid) }
-                    override fun onAdDismissedFullScreenContent() {
-                        emitSignal("on_rewarded_ad_dismissed_full_screen_content", uid)
-                        rewardedAds.remove(uid)
+                override fun onAdLoaded(ad: RewardedAd) {
+                    Log.d(TAG, "Rewarded ad loaded uid=$uid")
+                    ad.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
+                        AdRevenueHelper.logPaidEvent("rewarded", uid, adValue)
+                        emitSignal("on_paid_event", "rewarded", uid, adValue.valueMicros, adValue.currencyCode, adValue.precisionType)
                     }
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                        emitSignal("on_rewarded_ad_failed_to_show_full_screen_content", uid, createAdErrorDict(error))
-                        rewardedAds.remove(uid)
+                    ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() { emitSignal("on_rewarded_ad_clicked", uid) }
+                        override fun onAdDismissedFullScreenContent() {
+                            emitSignal("on_rewarded_ad_dismissed_full_screen_content", uid)
+                            rewardedAds.remove(uid)
+                        }
+                        override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                            emitSignal("on_rewarded_ad_failed_to_show_full_screen_content", uid, createAdErrorDict(error))
+                            rewardedAds.remove(uid)
+                        }
+                        override fun onAdImpression() { emitSignal("on_rewarded_ad_impression", uid) }
+                        override fun onAdShowedFullScreenContent() { emitSignal("on_rewarded_ad_showed_full_screen_content", uid) }
                     }
-                    override fun onAdImpression() { emitSignal("on_rewarded_ad_impression", uid) }
-                    override fun onAdShowedFullScreenContent() { emitSignal("on_rewarded_ad_showed_full_screen_content", uid) }
+                    rewardedAds[uid] = ad
+                    emitSignal("on_rewarded_ad_loaded", uid)
                 }
-                rewardedAds[uid] = ad
-                emitSignal("on_rewarded_ad_loaded", uid)
-            }
-        })
+            })
+        }
     }
 
     @UsedByGodot
@@ -385,12 +390,17 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
             emitSignal("on_interstitial_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
             return
         }
-        InterstitialAd.load(act, adUnitId, buildAdRequest(keywords), object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(error: LoadAdError) {
-                emitSignal("on_interstitial_ad_failed_to_load", uid, createLoadAdErrorDict(error))
-            }
-            override fun onAdLoaded(ad: InterstitialAd) {
-                Log.d(TAG, "Interstitial ad loaded uid=$uid")
+        // Must run on UI thread — Google SDK v25 silently drops callbacks when
+        // load() is called from a non-UI thread (same bug as banner + rewarded).
+        act.runOnUiThread {
+            Log.d(TAG, "interstitial_load: requesting load for uid=$uid")
+            InterstitialAd.load(act, adUnitId, buildAdRequest(keywords), object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.w(TAG, "Interstitial ad failed to load uid=$uid: ${error.message}")
+                    emitSignal("on_interstitial_ad_failed_to_load", uid, createLoadAdErrorDict(error))
+                }
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    Log.d(TAG, "Interstitial ad loaded uid=$uid")
                 ad.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
                     AdRevenueHelper.logPaidEvent("interstitial", uid, adValue)
                     emitSignal("on_paid_event", "interstitial", uid, adValue.valueMicros, adValue.currencyCode, adValue.precisionType)
@@ -412,6 +422,7 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
                 emitSignal("on_interstitial_ad_loaded", uid)
             }
         })
+        }
     }
 
     @UsedByGodot
@@ -443,33 +454,37 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
             emitSignal("on_rewarded_interstitial_ad_failed_to_load", uid, createErrorDict(-1, "Activity is null", ""))
             return
         }
-        RewardedInterstitialAd.load(act, adUnitId, buildAdRequest(keywords), object : RewardedInterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(error: LoadAdError) {
-                emitSignal("on_rewarded_interstitial_ad_failed_to_load", uid, createLoadAdErrorDict(error))
-            }
-            override fun onAdLoaded(ad: RewardedInterstitialAd) {
-                Log.d(TAG, "Rewarded interstitial ad loaded uid=$uid")
-                ad.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
-                    AdRevenueHelper.logPaidEvent("rewarded_interstitial", uid, adValue)
-                    emitSignal("on_paid_event", "rewarded_interstitial", uid, adValue.valueMicros, adValue.currencyCode, adValue.precisionType)
+        act.runOnUiThread {
+            Log.d(TAG, "rewarded_interstitial_load: requesting load for uid=$uid")
+            RewardedInterstitialAd.load(act, adUnitId, buildAdRequest(keywords), object : RewardedInterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.w(TAG, "Rewarded interstitial ad failed to load uid=$uid: ${error.message}")
+                    emitSignal("on_rewarded_interstitial_ad_failed_to_load", uid, createLoadAdErrorDict(error))
                 }
-                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdClicked() { emitSignal("on_rewarded_interstitial_ad_clicked", uid) }
-                    override fun onAdDismissedFullScreenContent() {
-                        emitSignal("on_rewarded_interstitial_ad_dismissed_full_screen_content", uid)
-                        rewardedInterstitialAds.remove(uid)
+                override fun onAdLoaded(ad: RewardedInterstitialAd) {
+                    Log.d(TAG, "Rewarded interstitial ad loaded uid=$uid")
+                    ad.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
+                        AdRevenueHelper.logPaidEvent("rewarded_interstitial", uid, adValue)
+                        emitSignal("on_paid_event", "rewarded_interstitial", uid, adValue.valueMicros, adValue.currencyCode, adValue.precisionType)
                     }
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                        emitSignal("on_rewarded_interstitial_ad_failed_to_show_full_screen_content", uid, createAdErrorDict(error))
-                        rewardedInterstitialAds.remove(uid)
+                    ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() { emitSignal("on_rewarded_interstitial_ad_clicked", uid) }
+                        override fun onAdDismissedFullScreenContent() {
+                            emitSignal("on_rewarded_interstitial_ad_dismissed_full_screen_content", uid)
+                            rewardedInterstitialAds.remove(uid)
+                        }
+                        override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                            emitSignal("on_rewarded_interstitial_ad_failed_to_show_full_screen_content", uid, createAdErrorDict(error))
+                            rewardedInterstitialAds.remove(uid)
+                        }
+                        override fun onAdImpression() { emitSignal("on_rewarded_interstitial_ad_impression", uid) }
+                        override fun onAdShowedFullScreenContent() { emitSignal("on_rewarded_interstitial_ad_showed_full_screen_content", uid) }
                     }
-                    override fun onAdImpression() { emitSignal("on_rewarded_interstitial_ad_impression", uid) }
-                    override fun onAdShowedFullScreenContent() { emitSignal("on_rewarded_interstitial_ad_showed_full_screen_content", uid) }
+                    rewardedInterstitialAds[uid] = ad
+                    emitSignal("on_rewarded_interstitial_ad_loaded", uid)
                 }
-                rewardedInterstitialAds[uid] = ad
-                emitSignal("on_rewarded_interstitial_ad_loaded", uid)
-            }
-        })
+            })
+        }
     }
 
     @UsedByGodot
