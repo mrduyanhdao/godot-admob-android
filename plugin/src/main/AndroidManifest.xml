@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+        <!-- AdMob Application ID (required by Google Mobile Ads SDK) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1227207959705466~3495294667" />
+
+        <!-- Consolidated FruitMergeAdMob plugin (all ad types) -->
+        <meta-data
+            android:name="org.godotengine.plugin.v2.FruitMergeAdMob"
+            android:value="com.fruitmerge.admob.FruitMergeAdMobPlugin" />
+    </application>
+</manifest>

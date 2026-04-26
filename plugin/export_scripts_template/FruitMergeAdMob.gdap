@@ -1,0 +1,10 @@
+[config]
+
+name="FruitMergeAdMob"
+binary_type="local"
+binary="FruitMergeAdMob.aar"
+
+[dependencies]
+
+local=[]
+remote=["com.google.android.gms:play-services-ads:25.2.0"]

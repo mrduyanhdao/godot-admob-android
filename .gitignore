@@ -1,0 +1,18 @@
+# Gradle
+.gradle/
+.kotlin/
+build/
+*/build/
+
+# IDE
+.idea/
+*.iml
+.local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Godot (compileOnly, not distributed)
+plugin/libs/*.aar
+plugin/libs/*.jar
