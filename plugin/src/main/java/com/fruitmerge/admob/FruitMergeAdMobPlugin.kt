@@ -191,12 +191,18 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
             return -1
         }
         val uid = bannerNextUid++
-        val width = if (adSizeWidth <= 0) AdSize.FULL_WIDTH else adSizeWidth
-        val height = if (adSizeHeight <= 0) 50 else adSizeHeight
+
+        // Use adaptive banner when width is FULL_WIDTH (-1), otherwise fixed size
+        val adSize = if (adSizeWidth <= 0) {
+            val screenWidth = (act.resources.displayMetrics.widthPixels / act.resources.displayMetrics.density).toInt()
+            AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(act, screenWidth)
+        } else {
+            AdSize(adSizeWidth, if (adSizeHeight <= 0) 50 else adSizeHeight)
+        }
 
         val adView = AdView(act)
         adView.setAdUnitId(adUnitId)
-        adView.setAdSize(AdSize(width, height))
+        adView.setAdSize(adSize)
 
         adView.onPaidEventListener = com.google.android.gms.ads.OnPaidEventListener { adValue ->
             AdRevenueHelper.logPaidEvent("banner", uid, adValue)
@@ -217,18 +223,21 @@ class FruitMergeAdMobPlugin(godot: Godot) : GodotPlugin(godot) {
             override fun onAdOpened() { emitSignal("on_ad_opened", uid) }
         }
 
+        // AdPosition.Values enum: TOP=0, BOTTOM=1
+        val gravity = if (adPosition == 1) Gravity.BOTTOM else Gravity.TOP
+
         act.runOnUiThread {
             val contentView = act.findViewById<ViewGroup>(android.R.id.content)
             val params = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             )
-            params.gravity = if (adPosition == 0) Gravity.BOTTOM else Gravity.TOP
+            params.gravity = gravity
             contentView.addView(adView, params)
         }
 
         adViews[uid] = adView
-        Log.d(TAG, "Created banner uid=$uid unit=$adUnitId pos=$adPosition size=${width}x${height}")
+        Log.d(TAG, "Created banner uid=$uid unit=$adUnitId pos=$adPosition size=${adSize.width}x${adSize.height}")
         return uid
     }
 
